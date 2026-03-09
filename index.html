@@ -449,20 +449,8 @@ canvas{display:block}
       <!-- DOKUMEN -->
       <div class="page" id="page-dokumen">
         <div class="sec-ttl">Dokumen Prodi</div>
-        <div class="sec-sub">Repositori link dokumen administrasi — tersimpan di Google Drive / OneDrive kampus</div>
-        <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
-          <input type="text" id="dok-search" placeholder="🔍 Cari dokumen..." style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid var(--cream);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem;outline:none">
-          <select id="dok-filter-kat" style="padding:8px 12px;border:1.5px solid var(--cream);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem;color:var(--ink);background:#fff;outline:none">
-            <option value="">Semua Kategori</option>
-            <option value="sk">SK & Surat Keputusan</option>
-            <option value="rps">RPS & Kurikulum</option>
-            <option value="notulen">Notulen Rapat</option>
-            <option value="ppepp">Evidence PPEPP</option>
-            <option value="laporan">Laporan & Evaluasi</option>
-            <option value="lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="card"><div id="dokumen-wrap"><div class="ld"><div class="spinner"></div> Memuat...</div></div></div>
+        <div class="sec-sub">Repositori dokumen administrasi</div>
+        <div class="card"><div id="dokumen-wrap"></div></div>
       </div>
 
       <!-- MAHASISWA -->
@@ -615,24 +603,13 @@ canvas{display:block}
         <div id="link-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
       <div class="form-group">
-        <label>📎 Evidence (Link Google Drive / OneDrive / URL)</label>
-        <div style="background:#f0f7ff;border:1.5px solid #c8d8f8;border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:.78rem;color:#1a42a0;line-height:1.6">
-          💡 <strong>Cara pakai:</strong> Upload file ke Google Drive → klik kanan → "Bagikan" → "Salin link" → paste di bawah.<br>
-          Tidak ada batas ukuran file. Semua format didukung (PDF, Word, Excel, foto, dll).
+        <label>📎 Upload Evidence</label>
+        <div class="upload-area" id="upload-area">
+          <div style="font-size:1.5rem">📁</div>
+          <p>Klik atau drag & drop file di sini<br><span style="font-size:.72rem">PDF, Word, Excel, Gambar (max 5MB)</span></p>
+          <input type="file" id="mp-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="text" id="mp-evd-label" placeholder="Nama dokumen (contoh: SK Rektor No.12/2026)" style="flex:2">
-          <select id="mp-evd-type" style="flex:0 0 130px;padding:10px 10px;border:1.5px solid var(--cream);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);background:#fff;outline:none">
-            <option value="gdrive">📁 Google Drive</option>
-            <option value="onedrive">☁️ OneDrive</option>
-            <option value="pdf">📄 PDF</option>
-            <option value="foto">🖼️ Foto</option>
-            <option value="lainnya">🔗 Lainnya</option>
-          </select>
-          <input type="url" id="mp-evd-url" placeholder="https://drive.google.com/..." style="flex:3">
-          <button type="button" id="btn-add-evd" style="padding:9px 14px;background:#1a7a4a;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:600;white-space:nowrap">+ Tambah</button>
-        </div>
-        <div id="evd-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        <div id="file-list" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
       <div class="form-group">
         <label>Catatan / Rekomendasi</label>
@@ -739,63 +716,6 @@ canvas{display:block}
   </div>
 </div>
 
-<!-- MODAL DOKUMEN -->
-<div class="modal-ov" id="modal-dok">
-  <div class="modal">
-    <div class="modal-hdr"><h3 id="mdok-title">Tambah Dokumen</h3><button class="modal-cls" data-close="modal-dok">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="mdok-id">
-      <div class="form-group"><label>Judul Dokumen *</label><input type="text" id="mdok-judul" placeholder="contoh: SK Rektor No.12 Penetapan Kurikulum 2025"></div>
-      <div class="frow">
-        <div class="form-group">
-          <label>Kategori</label>
-          <select id="mdok-kat">
-            <option value="sk">SK & Surat Keputusan</option>
-            <option value="rps">RPS & Kurikulum</option>
-            <option value="notulen">Notulen Rapat</option>
-            <option value="ppepp">Evidence PPEPP</option>
-            <option value="laporan">Laporan & Evaluasi</option>
-            <option value="lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tahun / Periode</label>
-          <input type="text" id="mdok-tahun" placeholder="2025 atau 2025/2026">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>🔗 Link Dokumen (Google Drive / OneDrive / URL) *</label>
-        <input type="url" id="mdok-url" placeholder="https://drive.google.com/file/d/...">
-        <div style="margin-top:6px;font-size:.75rem;color:var(--muted)">
-          💡 Di Google Drive: klik kanan file → "Bagikan" → "Siapa saja yang memiliki link" → "Salin link"
-        </div>
-      </div>
-      <div class="frow">
-        <div class="form-group">
-          <label>Jenis File</label>
-          <select id="mdok-jenis">
-            <option value="pdf">📄 PDF</option>
-            <option value="word">📝 Word (.docx)</option>
-            <option value="excel">📊 Excel (.xlsx)</option>
-            <option value="foto">🖼️ Foto / Gambar</option>
-            <option value="folder">📁 Folder Drive</option>
-            <option value="lainnya">🔗 Lainnya</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Diupload Oleh</label>
-          <input type="text" id="mdok-oleh" placeholder="Nama penanggung jawab">
-        </div>
-      </div>
-      <div class="form-group"><label>Keterangan</label><textarea id="mdok-ket" style="min-height:60px" placeholder="Deskripsi singkat isi dokumen..."></textarea></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" data-close="modal-dok">Batal</button>
-      <button class="btn btn-primary" id="btn-sv-dok">Simpan</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL DETAIL -->
 <div class="modal-ov" id="modal-detail">
   <div class="modal modal-lg">
@@ -846,6 +766,9 @@ canvas{display:block}
     <div class="modal-foot"><button class="btn btn-outline" data-close="modal-config">Batal</button><button class="btn btn-primary" id="btn-sv-cfg">Simpan & Reconnect</button></div>
   </div>
 </div>
+
+<!-- SUPABASE JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- CHART.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1189,118 +1112,9 @@ async function saveD() {
 }
 
 // ── DOKUMEN ──
-var DEMO_DOK = [
-  {id:1,judul:'SK Rektor — Penetapan Kurikulum 2025',kat:'sk',tahun:'2025',url:'https://drive.google.com',jenis:'pdf',oleh:'Kaprodi',ket:'SK penetapan kurikulum berbasis OBE',created_at:'2025-01-15'},
-  {id:2,judul:'Dokumen Kurikulum Program Studi 2025',kat:'rps',tahun:'2025',url:'https://drive.google.com',jenis:'word',oleh:'Tim Kurikulum',ket:'Dokumen lengkap kurikulum 144 SKS',created_at:'2025-02-01'},
-  {id:3,judul:'Notulen Rapat Kurikulum Feb 2026',kat:'notulen',tahun:'2026',url:'https://drive.google.com',jenis:'pdf',oleh:'Sekretaris',ket:'Hasil rapat tinjauan kurikulum',created_at:'2026-02-28'},
-  {id:4,judul:'Instrumen Audit Mutu Internal 2026',kat:'ppepp',tahun:'2026',url:'https://drive.google.com',jenis:'excel',oleh:'GPMP',ket:'Form AMI semester genap 2025/2026',created_at:'2026-02-20'},
-  {id:5,judul:'Laporan Evaluasi EDOM Ganjil 2025',kat:'laporan',tahun:'2025',url:'https://drive.google.com',jenis:'pdf',oleh:'Kaprodi',ket:'Rekap evaluasi dosen oleh mahasiswa',created_at:'2025-12-10'},
-  {id:6,judul:'Folder Evidence Akreditasi LAM 2026',kat:'ppepp',tahun:'2026',url:'https://drive.google.com',jenis:'folder',oleh:'Tim Akreditasi',ket:'Semua evidence 9 standar akreditasi',created_at:'2026-03-01'}
-];
-var dokStore = JSON.parse(JSON.stringify(DEMO_DOK));
-
-var DOK_KAT_LABEL = {sk:'SK & Surat Keputusan',rps:'RPS & Kurikulum',notulen:'Notulen Rapat',ppepp:'Evidence PPEPP',laporan:'Laporan & Evaluasi',lainnya:'Lainnya'};
-var DOK_KAT_COLOR = {sk:'bblue',rps:'bgreen',notulen:'byellow',ppepp:'bred',laporan:'bg',lainnya:'bg'};
-var DOK_JENIS_ICON = {pdf:'📄',word:'📝',excel:'📊',foto:'🖼️',folder:'📁',lainnya:'🔗'};
-
 function loadDok() {
-  var search = (el('dok-search').value||'').toLowerCase();
-  var filterKat = el('dok-filter-kat').value;
-  var data = dokStore.slice().filter(function(d){
-    var matchS = !search || d.judul.toLowerCase().includes(search) || (d.ket||'').toLowerCase().includes(search);
-    var matchK = !filterKat || d.kat === filterKat;
-    return matchS && matchK;
-  }).sort(function(a,b){ return new Date(b.created_at)-new Date(a.created_at); });
-
-  var w = el('dokumen-wrap');
-
-  // Summary bar per kategori
-  var katCount = {};
-  dokStore.forEach(function(d){ katCount[d.kat]=(katCount[d.kat]||0)+1; });
-  var summaryHtml = '<div style="display:flex;gap:10px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--cream);background:var(--paper)">'
-    + Object.keys(DOK_KAT_LABEL).filter(function(k){return katCount[k];}).map(function(k){
-        return '<span class="badge b'+(DOK_KAT_COLOR[k]||'bg')+'" style="cursor:pointer;font-size:.75rem" data-katf="'+k+'">'
-          +DOK_JENIS_ICON[k]||'🔗'+' '+DOK_KAT_LABEL[k]+' ('+katCount[k]+')</span>';
-      }).join('')
-    + '</div>';
-
-  if(!data.length){
-    w.innerHTML = summaryHtml + '<div class="empty" style="padding:48px"><div class="empty-ico">🗂</div><p>Belum ada dokumen.'+(search||filterKat?' Coba ubah filter.':'')+'</p></div>';
-    w.querySelectorAll('[data-katf]').forEach(function(b){ b.addEventListener('click',function(){ el('dok-filter-kat').value=b.getAttribute('data-katf'); loadDok(); }); });
-    return;
-  }
-
-  // Kelompokkan per kategori untuk tampilan
-  var rows = data.map(function(d,i){
-    var icon = DOK_JENIS_ICON[d.jenis]||'🔗';
-    return '<tr>'
-      +'<td style="width:36px;font-size:1.2rem;text-align:center">'+icon+'</td>'
-      +'<td><a href="'+d.url+'" target="_blank" style="font-weight:600;color:var(--ink);text-decoration:none;font-size:.86rem">'+d.judul+'</a>'
-      +(d.ket?'<br><span style="font-size:.74rem;color:var(--muted)">'+d.ket+'</span>':'')+'</td>'
-      +'<td><span class="badge '+(DOK_KAT_COLOR[d.kat]||'bg')+'">'+( DOK_KAT_LABEL[d.kat]||d.kat )+'</span></td>'
-      +'<td style="font-size:.8rem;color:var(--muted)">'+(d.tahun||'—')+'</td>'
-      +'<td style="font-size:.8rem;color:var(--muted)">'+(d.oleh||'—')+'</td>'
-      +'<td style="font-size:.78rem;color:var(--muted)">'+(d.created_at?fmtD(d.created_at):'—')+'</td>'
-      +'<td style="display:flex;gap:5px">'
-      +'<a href="'+d.url+'" target="_blank" class="btn btn-outline btn-sm" style="font-size:.75rem">🔗 Buka</a>'
-      +'<button class="btn btn-outline btn-sm" data-edok="'+i+'">Edit</button>'
-      +'<button class="btn btn-danger btn-sm" data-ddok="'+d.id+'">Hapus</button>'
-      +'</td></tr>';
-  }).join('');
-
-  w.innerHTML = summaryHtml
-    + '<table><thead><tr><th></th><th>Judul Dokumen</th><th>Kategori</th><th>Tahun</th><th>Penanggung Jawab</th><th>Ditambahkan</th><th>Aksi</th></tr></thead><tbody>'
-    + rows + '</tbody></table>'
-    + '<div style="padding:10px 18px;background:var(--paper);border-top:1px solid var(--cream);font-size:.77rem;color:var(--muted)">'+data.length+' dokumen ditampilkan &nbsp;•&nbsp; Semua file tersimpan di Google Drive / OneDrive kampus</div>';
-
-  w.querySelectorAll('[data-katf]').forEach(function(b){ b.addEventListener('click',function(){ el('dok-filter-kat').value=b.getAttribute('data-katf'); loadDok(); }); });
-  w.querySelectorAll('[data-edok]').forEach(function(b){ var i=parseInt(b.getAttribute('data-edok')); b.addEventListener('click',function(){ openDok(data[i]); }); });
-  w.querySelectorAll('[data-ddok]').forEach(function(b){ var id=parseInt(b.getAttribute('data-ddok')); b.addEventListener('click',function(){ delDok(id); }); });
-}
-
-function openDok(d) {
-  el('mdok-id').value    = d ? d.id  : '';
-  el('mdok-title').textContent = d ? 'Edit Dokumen' : 'Tambah Dokumen';
-  el('mdok-judul').value = d ? d.judul||'' : '';
-  el('mdok-kat').value   = d ? d.kat||'sk' : 'sk';
-  el('mdok-tahun').value = d ? d.tahun||'' : new Date().getFullYear();
-  el('mdok-url').value   = d ? d.url||'' : '';
-  el('mdok-jenis').value = d ? d.jenis||'pdf' : 'pdf';
-  el('mdok-oleh').value  = d ? d.oleh||'' : '';
-  el('mdok-ket').value   = d ? d.ket||'' : '';
-  openM('modal-dok');
-}
-
-function saveDok() {
-  var id  = el('mdok-id').value;
-  var row = {
-    judul : el('mdok-judul').value.trim(),
-    kat   : el('mdok-kat').value,
-    tahun : el('mdok-tahun').value.trim(),
-    url   : el('mdok-url').value.trim(),
-    jenis : el('mdok-jenis').value,
-    oleh  : el('mdok-oleh').value.trim(),
-    ket   : el('mdok-ket').value.trim(),
-    created_at: new Date().toISOString().split('T')[0]
-  };
-  if(!row.judul){ toast('Judul dokumen wajib diisi','error'); return; }
-  if(!row.url)  { toast('Link dokumen wajib diisi','error');  return; }
-  if(!row.url.startsWith('http')){ toast('Link harus dimulai dengan https://','error'); return; }
-  if(DEMO){
-    if(id){ var idx=dokStore.findIndex(function(d){return d.id==id;}); if(idx>=0) dokStore[idx]=Object.assign({},dokStore[idx],row); }
-    else  { row.id=Date.now(); dokStore.unshift(row); }
-  } else {
-    var op = id ? dbUpd('dokumen',id,row) : dbIns('dokumen',row);
-    op.then(function(r){ if(!r.ok){toast('Gagal menyimpan','error');return;} });
-  }
-  toast('Dokumen disimpan!','success'); closeM('modal-dok'); loadDok();
-}
-
-function delDok(id){
-  if(!confirm('Yakin hapus dokumen ini?\n\nFile di Google Drive tidak akan terhapus.')) return;
-  if(DEMO){ dokStore=dokStore.filter(function(d){return d.id!==id;}); }
-  else     { dbDel('dokumen',id); }
-  toast('Dokumen dihapus dari daftar',''); loadDok();
+  el('dokumen-wrap').innerHTML='<div class="empty" style="padding:40px"><div class="empty-ico">🗂</div><p style="margin-bottom:16px">Fitur upload dokumen memerlukan Supabase Storage.<br>Hubungkan ke Supabase untuk mengaktifkan.</p><button class="btn btn-primary btn-sm" id="cfg-dok-btn">⚙️ Konfigurasi Supabase</button></div>';
+  var b=el('cfg-dok-btn'); if(b) b.addEventListener('click',function(){openM('modal-config');});
 }
 
 // ── DELETE ──
@@ -1367,7 +1181,6 @@ function topAction() {
   else if(id==='dosen') openD(null);
   else if(id==='ppepp') openPpepp(null,ppeppActiveFase);
   else if(id==='mk') openMK(null);
-  else if(id==='dokumen') openDok(null);
   else openN(null);
 }
 
@@ -1410,7 +1223,6 @@ el('btn-gen-ai').addEventListener('click', genAI);
 el('btn-save-ai').addEventListener('click', saveAI);
 el('btn-save-key').addEventListener('click', saveKey);
 el('btn-sv-mk').addEventListener('click', saveMK);
-el('btn-sv-dok').addEventListener('click', saveDok);
 
 // Notifikasi
 el('btn-notif').addEventListener('click', toggleNotif);
@@ -1420,24 +1232,6 @@ el('notif-mark-read').addEventListener('click', markAllRead);
 el('mk-search').addEventListener('input', loadMK);
 el('mk-filter-sem').addEventListener('change', loadMK);
 el('mk-filter-rps').addEventListener('change', loadMK);
-
-// Dokumen filter live search
-el('dok-search').addEventListener('input', loadDok);
-el('dok-filter-kat').addEventListener('change', loadDok);
-
-// Evidence PPEPP — tambah link
-el('btn-add-evd').addEventListener('click', function(){
-  var lbl = el('mp-evd-label').value.trim();
-  var url = el('mp-evd-url').value.trim();
-  var type = el('mp-evd-type').value;
-  if(!lbl){ toast('Nama dokumen wajib diisi','error'); return; }
-  if(!url){ toast('Link dokumen wajib diisi','error'); return; }
-  if(!url.startsWith('http')){ toast('Link harus dimulai dengan https://','error'); return; }
-  tempEvidence.push({label:lbl, url:url, type:type});
-  renderEvidence();
-  el('mp-evd-label').value='';
-  el('mp-evd-url').value='';
-});
 
 function loadSavedKey() {
   var k = localStorage.getItem('anthropic_key') || '';
@@ -1451,23 +1245,7 @@ function loadSavedKey() {
 // ── PPEPP ──
 var ppeppActiveFase = 'P1';
 var tempLinks = [];
-var tempEvidence = [];
-
-function renderEvidence() {
-  var c = el('evd-list');
-  if(!c) return;
-  c.innerHTML = tempEvidence.map(function(e,i){
-    var icon = {gdrive:'📁',onedrive:'☁️',pdf:'📄',foto:'🖼️',lainnya:'🔗'}[e.type]||'🔗';
-    return '<span class="evd-chip">'
-      +'<a href="'+e.url+'" target="_blank">'+icon+' '+e.label+'</a>'
-      +'<span style="color:#e74c3c;cursor:pointer;margin-left:4px" data-ei="'+i+'">✕</span>'
-      +'</span>';
-  }).join('');
-  c.querySelectorAll('[data-ei]').forEach(function(s){
-    var i=parseInt(s.getAttribute('data-ei'));
-    s.addEventListener('click',function(){ tempEvidence.splice(i,1); renderEvidence(); });
-  });
-}
+var tempFiles = [];
 
 var DEMO_PPEPP = [
   {id:1,fase:'P1',standar:'S1',judul:'Penetapan Standar Kompetensi Lulusan',deskripsi:'Menetapkan profil lulusan, capaian pembelajaran (CPL) sesuai KKNI level 6',target:'CPL tervalidasi 100% sesuai KKNI',capaian:'CPL sudah disahkan Senat',persen:100,status:'tercapai',pic:'Kaprodi',periode:'2025/2026',links:'[{"label":"SK Penetapan CPL","url":"https://drive.google.com"}]',evidence:'[]',catatan:'',created_at:'2026-01-10'},
@@ -1552,11 +1330,7 @@ function renderFase(fase, items) {
       return '<a href="'+l.url+'" target="_blank" class="link-chip">🔗 '+l.label+'</a>';
     }).join('');
     var evdHtml = evd.map(function(e2){
-      var icon = {gdrive:'📁',onedrive:'☁️',pdf:'📄',foto:'🖼️',lainnya:'🔗'}[e2.type]||'📎';
-      var label = e2.label || e2.name || e2;
-      var url   = e2.url || null;
-      if(url) return '<a href="'+url+'" target="_blank" class="link-chip">'+icon+' '+label+'</a>';
-      return '<span class="evd-chip">'+icon+' '+label+'</span>';
+      return '<span class="evd-chip">📎 '+(e2.name||e2)+'</span>';
     }).join('');
 
     return '<div class="std-card">'
@@ -1614,11 +1388,9 @@ function openPpepp(d, fase) {
   el('mp-catatan').value = d?d.catatan||'':'';
   // Load links
   try{ tempLinks = JSON.parse(d&&d.links?d.links:'[]'); }catch(e){ tempLinks=[]; }
-  // Load evidence sebagai link
-  try{ tempEvidence = JSON.parse(d&&d.evidence?d.evidence:'[]'); }catch(e){ tempEvidence=[]; }
   renderLinks();
   el('link-list').innerHTML=''; renderLinks();
-  renderEvidence();
+  el('file-list').innerHTML='';
   el('mp-link-label').value='';
   el('mp-link-url').value='';
   openM('modal-ppepp');
@@ -1652,7 +1424,7 @@ async function savePpepp() {
     pic: el('mp-pic').value,
     catatan: el('mp-catatan').value,
     links: JSON.stringify(tempLinks),
-    evidence: JSON.stringify(tempEvidence)
+    evidence: JSON.stringify(tempFiles)
   };
   if(!row.judul||!row.standar){toast('Standar dan judul wajib diisi','error');return;}
   var b=el('btn-sv-ppepp'); b.disabled=true; b.textContent='Menyimpan...';
@@ -2048,6 +1820,34 @@ el('btn-add-link').addEventListener('click',function(){
   renderLinks();
   el('mp-link-label').value=''; el('mp-link-url').value='';
 });
+
+// Upload area click
+el('upload-area').addEventListener('click',function(){ el('mp-file').click(); });
+el('mp-file').addEventListener('change',function(){
+  Array.from(this.files).forEach(function(f){
+    if(f.size>5*1024*1024){toast('File '+f.name+' terlalu besar (max 5MB)','error');return;}
+    tempFiles.push({name:f.name,size:f.size,type:f.type});
+    var chip=document.createElement('span');
+    chip.className='evd-chip';
+    chip.innerHTML='📎 '+f.name+' <span style="color:#e74c3c;cursor:pointer" data-fn="'+f.name+'">✕</span>';
+    chip.querySelector('[data-fn]').addEventListener('click',function(){
+      var fn=this.getAttribute('data-fn');
+      tempFiles=tempFiles.filter(function(ff){return ff.name!==fn;});
+      chip.remove();
+    });
+    el('file-list').appendChild(chip);
+  });
+});
+
+// Drag & drop upload
+el('upload-area').addEventListener('dragover',function(e){e.preventDefault();this.style.borderColor='var(--accent)';});
+el('upload-area').addEventListener('dragleave',function(){this.style.borderColor='';});
+el('upload-area').addEventListener('drop',function(e){
+  e.preventDefault(); this.style.borderColor='';
+  el('mp-file').files=e.dataTransfer.files;
+  el('mp-file').dispatchEvent(new Event('change'));
+});
+
 
 })(); // end IIFE
 </script>
