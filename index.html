@@ -1574,40 +1574,39 @@ el('login-password').addEventListener('keydown', function(e){ if(e.key==='Enter'
 el('login-email').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
 // ── KONFIGURASI TERSEMBUNYI ──
-// Ketik "siprodi" di halaman login untuk membuka konfigurasi
 (function(){
+  function bukaModalCfg() {
+    el('lcfg-url').value = localStorage.getItem('sb_url') || '';
+    el('lcfg-key').value = localStorage.getItem('sb_key') || '';
+    el('modal-login-cfg').style.display = 'flex';
+  }
+
+  // Cara 1: Ketik "siprodi" - aktif bahkan saat di dalam input
   var secret = 'siprodi';
   var buffer = '';
-  document.addEventListener('keydown', function(e){
-    // Hanya aktif saat halaman login terlihat
+  document.addEventListener('keyup', function(e){
     var loginScreen = el('login-screen');
     if(!loginScreen || loginScreen.style.display === 'none') return;
-    // Abaikan modifier keys
-    if(e.ctrlKey || e.altKey || e.metaKey) return;
-    // Hanya tangkap saat focus bukan di input field
-    if(document.activeElement && (document.activeElement.tagName==='INPUT' || document.activeElement.tagName==='TEXTAREA')) return;
-    buffer += e.key.toLowerCase();
-    if(buffer.length > secret.length) buffer = buffer.slice(-secret.length);
-    if(buffer === secret) {
+    if(e.key && e.key.length === 1) {
+      buffer += e.key.toLowerCase();
+      if(buffer.length > secret.length) buffer = buffer.slice(-secret.length);
+      if(buffer === secret) { buffer = ''; bukaModalCfg(); }
+    } else {
       buffer = '';
-      el('lcfg-url').value = localStorage.getItem('sb_url') || '';
-      el('lcfg-key').value = localStorage.getItem('sb_key') || '';
-      el('modal-login-cfg').style.display = 'flex';
     }
   });
-  // Klik 5x cepat pada logo SiProdi juga membuka konfigurasi
-  var logoClicks = 0, logoTimer = null;
+
+  // Cara 2: Klik 3x cepat pada tulisan "SiProdi" di login box
+  var clicks = 0, timer = null;
   document.addEventListener('click', function(e){
-    if(e.target && e.target.classList.contains('login-logo')) {
-      logoClicks++;
-      clearTimeout(logoTimer);
-      logoTimer = setTimeout(function(){ logoClicks = 0; }, 1500);
-      if(logoClicks >= 5) {
-        logoClicks = 0;
-        el('lcfg-url').value = localStorage.getItem('sb_url') || '';
-        el('lcfg-key').value = localStorage.getItem('sb_key') || '';
-        el('modal-login-cfg').style.display = 'flex';
-      }
+    var loginScreen = el('login-screen');
+    if(!loginScreen || loginScreen.style.display === 'none') return;
+    var t = e.target;
+    if(t && (t.classList.contains('login-logo') || t.classList.contains('login-sub') || t.id === 'btn-login-cfg')) {
+      clicks++;
+      clearTimeout(timer);
+      timer = setTimeout(function(){ clicks = 0; }, 2000);
+      if(clicks >= 3) { clicks = 0; bukaModalCfg(); }
     }
   });
 })();
