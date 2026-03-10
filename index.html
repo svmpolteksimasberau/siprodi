@@ -21,10 +21,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .login-btn:hover{background:#b05520;transform:translateY(-1px)}
 .login-btn:disabled{background:#bbb;cursor:not-allowed;transform:none}
 .login-err{color:#c0392b;font-size:.8rem;margin-top:10px;text-align:center;display:none}
-.login-demo{margin-top:20px;padding:14px;background:var(--paper);border-radius:8px;font-size:.78rem;color:var(--muted);border:1px solid var(--cream)}
-.login-demo strong{color:var(--ink)}
-.btn-quick{margin-top:10px;width:100%;padding:9px;background:#0f1923;color:#f5f0e8;border:none;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600}
-.btn-quick:hover{background:#1e3048}
+
 #app-screen{display:none}
 .layout{display:flex}
 .sidebar{width:240px;min-height:100vh;background:var(--ink);display:flex;flex-direction:column;padding:28px 0 20px;position:fixed;top:0;left:0;z-index:100}
@@ -230,18 +227,14 @@ canvas{display:block}
     <div class="lg">
       <div class="form-group">
         <label>Email</label>
-        <input type="email" id="login-email" value="admin@siprodi.ac.id" placeholder="email@kampus.ac.id">
+        <input type="email" id="login-email" placeholder="email@kampus.ac.id">
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="login-password" value="siprodi123" placeholder="••••••••">
+        <input type="password" id="login-password" placeholder="••••••••">
       </div>
       <button class="login-btn" id="btn-login">Masuk</button>
       <div class="login-err" id="login-err"></div>
-    </div>
-    <div class="login-demo">
-      <strong>Demo Login:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7312171e1a1d33001a03011c171a5d12105d1a17">[email&#160;protected]</a> / siprodi123
-      <button class="btn-quick" id="btn-quick">⚡ Masuk Cepat (Demo)</button>
     </div>
   </div>
 </div>
@@ -449,7 +442,17 @@ canvas{display:block}
       <!-- DOKUMEN -->
       <div class="page" id="page-dokumen">
         <div class="sec-ttl">Dokumen Prodi</div>
-        <div class="sec-sub">Repositori dokumen administrasi</div>
+        <div class="sec-sub">Repositori dokumen administrasi — semua file tersimpan di Google Drive</div>
+        <div id="dok-download-panel" style="background:#fff;border:1px solid var(--cream);border-radius:var(--radius);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow)">
+          <div>
+            <div style="font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:3px">📥 Unduh Semua Dokumen</div>
+            <div style="font-size:.78rem;color:var(--muted)">Buka semua link dokumen sekaligus, atau ekspor daftar dokumen sebagai CSV</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="exportDokCSV()">⬇ Ekspor Daftar (CSV)</button>
+            <button class="btn btn-primary btn-sm" onclick="bukaSemuaDok()">🔗 Buka Semua di Drive</button>
+          </div>
+        </div>
         <div class="card"><div id="dokumen-wrap"></div></div>
       </div>
 
@@ -756,14 +759,20 @@ canvas{display:block}
 <!-- MODAL CONFIG -->
 <div class="modal-ov" id="modal-config">
   <div class="modal">
-    <div class="modal-hdr"><h3>⚙️ Konfigurasi Supabase</h3><button class="modal-cls" data-close="modal-config">✕</button></div>
+    <div class="modal-hdr"><h3>⚙️ Konfigurasi Sistem</h3><button class="modal-cls" data-close="modal-config">✕</button></div>
     <div class="modal-body">
-      <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px;line-height:1.6">Masukkan kredensial Supabase. Lihat <strong>TUTORIAL.md</strong> untuk panduan.</p>
+      <div style="background:#eef6ff;border:1px solid #b3d4ff;border-radius:8px;padding:12px 14px;font-size:.8rem;color:#1a4a8a;margin-bottom:18px">
+        <strong>📁 Google Drive Upload</strong> sudah aktif dengan Apps Script. Konfigurasikan Supabase di bawah untuk menyimpan data ke cloud.
+      </div>
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:10px;color:var(--ink)">Google Apps Script (Upload ke Drive)</div>
+      <div class="form-group"><label>Web App URL</label><input type="text" id="cfg-gas" placeholder="https://script.google.com/macros/s/.../exec"></div>
+      <div style="height:1px;background:var(--cream);margin:16px 0"></div>
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:10px;color:var(--ink)">Supabase (Database Cloud — Opsional)</div>
       <div class="form-group"><label>Supabase URL</label><input type="text" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
       <div class="form-group"><label>Supabase Anon Key</label><input type="text" id="cfg-key" placeholder="eyJhbGciOiJI..."></div>
-      <div style="background:var(--paper);border-radius:8px;padding:12px;font-size:.79rem;color:var(--muted);border:1px solid var(--cream)">Kosongkan untuk tetap di <strong>Demo Mode</strong>. Data demo tersimpan di memori sesi.</div>
+      <div style="background:var(--paper);border-radius:8px;padding:10px 12px;font-size:.78rem;color:var(--muted);border:1px solid var(--cream)">Tanpa Supabase, data tersimpan di browser lokal. Upload ke Google Drive tetap berfungsi.</div>
     </div>
-    <div class="modal-foot"><button class="btn btn-outline" data-close="modal-config">Batal</button><button class="btn btn-primary" id="btn-sv-cfg">Simpan & Reconnect</button></div>
+    <div class="modal-foot"><button class="btn btn-outline" data-close="modal-config">Batal</button><button class="btn btn-primary" id="btn-sv-cfg">Simpan & Terapkan</button></div>
   </div>
 </div>
 
@@ -781,6 +790,7 @@ canvas{display:block}
 // ── CONFIG ──
 var SB_URL = localStorage.getItem('sb_url') || '';
 var SB_KEY = localStorage.getItem('sb_key') || '';
+var GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbxH9KoeJSv41ykYQrBbyC67IoFlaLYrtPA39fLmcsBRz7lMS0977oKLGQ8bEfiWdPOo6w/exec';
 var sbc = null;
 var DEMO = true;
 var user = null;
@@ -816,13 +826,29 @@ var DS = JSON.parse(JSON.stringify(BASE));
 
 // ── SUPABASE INIT ──
 function initSB() {
-  if (!SB_URL || !SB_KEY) return;
+  if (!SB_URL || !SB_KEY) { DEMO = true; loadLocalData(); return; }
   try {
     if (window.supabase && window.supabase.createClient) {
       sbc = window.supabase.createClient(SB_URL, SB_KEY);
       DEMO = false;
     }
-  } catch(e) { sbc = null; DEMO = true; }
+  } catch(e) { sbc = null; DEMO = true; loadLocalData(); }
+}
+
+// ── LOCAL STORAGE PERSISTENCE (mode tanpa Supabase) ──
+function loadLocalData() {
+  var saved = localStorage.getItem('siprodi_data');
+  if (saved) {
+    try { DS = JSON.parse(saved); } catch(e) { DS = JSON.parse(JSON.stringify(BASE)); }
+    // Pastikan semua key ada
+    ['notulen','agenda','mahasiswa','dosen'].forEach(function(k){
+      if(!DS[k]) DS[k] = JSON.parse(JSON.stringify(BASE[k]));
+    });
+  }
+}
+
+function saveLocalData() {
+  if (DEMO) localStorage.setItem('siprodi_data', JSON.stringify(DS));
 }
 
 // ── DB ──
@@ -832,15 +858,15 @@ async function dbGet(t) {
   return r.data || [];
 }
 async function dbIns(t,row) {
-  if (DEMO) { var n=Object.assign({},row,{id:Date.now(),created_at:new Date().toISOString()}); DS[t].unshift(n); return {ok:true}; }
+  if (DEMO) { var n=Object.assign({},row,{id:Date.now(),created_at:new Date().toISOString()}); if(!DS[t])DS[t]=[]; DS[t].unshift(n); saveLocalData(); return {ok:true}; }
   var r=await sbc.from(t).insert(row).select().single(); return {ok:!r.error,err:r.error};
 }
 async function dbUpd(t,id,row) {
-  if (DEMO) { var i=DS[t].findIndex(function(r){return r.id==id;}); if(i>=0) DS[t][i]=Object.assign({},DS[t][i],row); return {ok:true}; }
+  if (DEMO) { var i=DS[t].findIndex(function(r){return r.id==id;}); if(i>=0) DS[t][i]=Object.assign({},DS[t][i],row); saveLocalData(); return {ok:true}; }
   var r=await sbc.from(t).update(row).eq('id',id); return {ok:!r.error};
 }
 async function dbDel(t,id) {
-  if (DEMO) { DS[t]=DS[t].filter(function(r){return r.id!=id;}); return {ok:true}; }
+  if (DEMO) { DS[t]=DS[t].filter(function(r){return r.id!=id;}); saveLocalData(); return {ok:true}; }
   var r=await sbc.from(t).delete().eq('id',id); return {ok:!r.error};
 }
 
@@ -887,7 +913,7 @@ function showPage(id) {
 function dbStatus() {
   var e=el('db-status'); if(!e) return;
   if(DEMO) {
-    e.innerHTML='<span class="badge byellow">Demo Mode</span><p style="margin-top:8px;font-size:.8rem;color:var(--muted)">Data di memori lokal. <a href="#" id="lnk-cfg" style="color:var(--accent)">Hubungkan Supabase →</a></p>';
+    e.innerHTML='<span class="badge byellow">Mode Lokal</span><p style="margin-top:8px;font-size:.8rem;color:var(--muted)">Data tersimpan di browser ini. <a href="#" id="lnk-cfg" style="color:var(--accent)">Hubungkan Supabase untuk cloud →</a></p>';
     var l=el('lnk-cfg'); if(l) l.addEventListener('click',function(ev){ev.preventDefault();openM('modal-config');});
   } else {
     e.innerHTML='<span class="badge bgreen">✓ Supabase Aktif</span><p style="margin-top:8px;font-size:.8rem;color:var(--muted)">Database terhubung. <a href="#" id="lnk-cfg2" style="color:var(--accent)">Ubah konfigurasi</a></p>';
@@ -904,11 +930,24 @@ function doLogin() {
   errEl.style.display='none';
   btn.textContent='Memproses...'; btn.disabled=true;
   setTimeout(async function(){
-    if(DEMO) {
-      if(email==='admin@siprodi.ac.id' && pass==='siprodi123') {
-        user={email:email,name:'Sekretaris Prodi'}; startApp();
+    if(!SB_URL || !SB_KEY) {
+      // Mode lokal: simpan ke localStorage sebagai fallback sederhana
+      var savedUsers = JSON.parse(localStorage.getItem('siprodi_users')||'[]');
+      var found = savedUsers.find(function(u){return u.email===email&&u.pass===pass;});
+      if(!found && email && pass) {
+        // Auto-register first user as admin
+        if(savedUsers.length===0) {
+          savedUsers.push({email:email,pass:pass,name:email.split('@')[0]});
+          localStorage.setItem('siprodi_users', JSON.stringify(savedUsers));
+          found = savedUsers[0];
+        }
+      }
+      if(found) {
+        user={email:found.email,name:found.name||found.email.split('@')[0]};
+        startApp();
       } else {
-        errEl.textContent='Email atau password salah.'; errEl.style.display='block';
+        errEl.textContent='Email atau password salah. Silakan hubungkan ke Supabase untuk login.';
+        errEl.style.display='block';
       }
       btn.textContent='Masuk'; btn.disabled=false; return;
     }
@@ -917,15 +956,10 @@ function doLogin() {
       if(r.error){ errEl.textContent='Login gagal: '+r.error.message; errEl.style.display='block'; }
       else { user=r.data.user; startApp(); }
     } catch(e) {
-      errEl.textContent='Koneksi gagal, beralih ke demo...'; errEl.style.display='block';
-      DEMO=true; setTimeout(function(){ errEl.style.display='none'; },2000);
+      errEl.textContent='Koneksi gagal: '+e.message; errEl.style.display='block';
     }
     btn.textContent='Masuk'; btn.disabled=false;
   }, 300);
-}
-
-function quickLogin() {
-  DEMO=true; user={email:'admin@siprodi.ac.id',name:'Sekretaris Prodi'}; startApp();
 }
 
 function doLogout() {
@@ -1112,11 +1146,269 @@ async function saveD() {
 }
 
 // ── DOKUMEN ──
-function loadDok() {
-  el('dokumen-wrap').innerHTML='<div class="empty" style="padding:40px"><div class="empty-ico">🗂</div><p style="margin-bottom:16px">Fitur upload dokumen memerlukan Supabase Storage.<br>Hubungkan ke Supabase untuk mengaktifkan.</p><button class="btn btn-primary btn-sm" id="cfg-dok-btn">⚙️ Konfigurasi Supabase</button></div>';
-  var b=el('cfg-dok-btn'); if(b) b.addEventListener('click',function(){openM('modal-config');});
+var dokStore=[
+  {id:1,nama:'SK Pembukaan Program Studi',kategori:'SK',tanggal:'2024-01-15',link:'https://drive.google.com',desk:'Surat Keputusan Pembukaan Prodi'},
+  {id:2,nama:'RPS Metodologi Penelitian',kategori:'RPS',tanggal:'2025-08-01',link:'https://drive.google.com',desk:'RPS semester ganjil 2025'},
+  {id:3,nama:'Notulen Rapat Kurikulum Feb 2026',kategori:'Notulen',tanggal:'2026-02-28',link:'https://drive.google.com',desk:'Notulen rapat tinjauan kurikulum'},
+  {id:4,nama:'Laporan Evaluasi Diri 2025',kategori:'Laporan',tanggal:'2025-12-01',link:'https://drive.google.com',desk:'LED untuk akreditasi'},
+  {id:5,nama:'Dokumen PPEPP Standar 1',kategori:'PPEPP',tanggal:'2026-01-10',link:'https://drive.google.com',desk:'Dokumen penetapan standar visi misi'},
+  {id:6,nama:'SK Dosen Pengampu 2025/2026',kategori:'SK',tanggal:'2025-09-01',link:'https://drive.google.com',desk:'SK penugasan dosen semester ganjil'},
+];
+var dokNextId=7;
+var dokKategori=['SK','RPS','Notulen','PPEPP','Laporan','Lainnya'];
+var dokKatColor={SK:'#C8622A',RPS:'#2A6BC8',Notulen:'#1A7A4A',PPEPP:'#8B4FB8',Laporan:'#B89A3E',Lainnya:'#7A7060'};
+
+async function loadDok(){
+  var wrap=el('dokumen-wrap');
+  // Load dokStore dari localStorage kalau belum ada
+  var saved = localStorage.getItem('siprodi_dok');
+  if(saved) { try { dokStore = JSON.parse(saved); } catch(e){} }
+  var items=[];
+  if(DEMO){items=dokStore.slice();}
+  else{var r=await sbc.from('dokumen').select('*').order('created_at',{ascending:false});items=r.data||[];}
+  var fCat=(el('dok-filter-cat')&&el('dok-filter-cat').value)||'';
+  var fQ=(el('dok-filter-q')&&el('dok-filter-q').value.toLowerCase())||'';
+  var filtered=items.filter(function(d){return(!fCat||d.kategori===fCat)&&(!fQ||d.nama.toLowerCase().includes(fQ)||(d.desk||'').toLowerCase().includes(fQ));});
+  var summary=dokKategori.map(function(k){var cnt=items.filter(function(d){return d.kategori===k;}).length;return cnt>0?'<span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;margin:2px;background:'+dokKatColor[k]+'22;color:'+dokKatColor[k]+';border:1px solid '+dokKatColor[k]+'44">'+k+' ('+cnt+')</span>':'';}).join('');
+  var html='<div style="padding:16px 22px 0"><div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input id="dok-filter-q" type="text" placeholder="🔍 Cari dokumen..." style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;flex:1;min-width:160px" value="'+(fQ||'')+'"><select id="dok-filter-cat" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="">Semua Kategori</option>'+dokKategori.map(function(k){return'<option value="'+k+'"'+(fCat===k?' selected':'')+'>'+k+'</option>';}).join('')+'</select></div><div style="margin-bottom:12px">'+summary+'</div></div>';
+  if(!filtered.length){html+='<div class="empty" style="padding:40px 22px"><div class="empty-ico">🗂</div><p>Belum ada dokumen. Klik "+ Unggah Dokumen" untuk menambahkan link dokumen dari Google Drive.</p></div>';}
+  else{
+    html+='<div style="display:grid;gap:10px;padding:0 22px 22px">';
+    filtered.forEach(function(d){
+      var kc=dokKatColor[d.kategori]||'#7A7060';
+      html+='<div style="border:1px solid #e8e0d4;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:14px;background:#fff"><div style="width:44px;height:44px;border-radius:8px;background:'+kc+'18;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📄</div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;margin-bottom:2px">'+d.nama+'</div><div style="font-size:12px;color:#7A7060">'+(d.desk||'')+'</div><div style="margin-top:4px;display:flex;gap:8px;align-items:center"><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+kc+'22;color:'+kc+';border:1px solid '+kc+'44">'+d.kategori+'</span><span style="font-size:11px;color:#aaa">'+(d.tanggal||'')+'</span></div></div><div style="display:flex;gap:6px;flex-shrink:0">'+(d.link?'<a href="'+d.link+'" target="_blank" style="padding:5px 12px;border-radius:6px;background:#2A6BC8;color:#fff;font-size:12px;text-decoration:none;white-space:nowrap">🔗 Buka</a>':'')+'<button onclick="openDok('+d.id+')" style="padding:5px 10px;border-radius:6px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer">✏️</button><button onclick="delDok('+d.id+')" style="padding:5px 10px;border-radius:6px;border:1px solid #fcc;background:#fff;font-size:12px;cursor:pointer;color:#c0392b">🗑</button></div></div>';
+    });
+    html+='</div>';
+  }
+  wrap.innerHTML=html;
+  var fqEl=el('dok-filter-q');var fcEl=el('dok-filter-cat');
+  if(fqEl)fqEl.addEventListener('input',loadDok);
+  if(fcEl)fcEl.addEventListener('change',loadDok);
 }
 
+function saveDokLocal() {
+  localStorage.setItem('siprodi_dok', JSON.stringify(dokStore));
+}
+
+function openDok(id){
+  var d = id ? (DEMO ? dokStore.find(function(x){return x.id===id;}) : null) : null;
+  var bodyHtml = `
+  <div style="padding:16px;display:grid;gap:12px">
+    <div class="form-group"><label>Nama Dokumen *</label><input type="text" id="dok-nama" value="${d?d.nama:''}" placeholder="Contoh: SK Kurikulum 2025"></div>
+    <div class="form-group"><label>Kategori</label><select id="dok-kat">${dokKategori.map(function(k){return'<option value="'+k+'"'+(d&&d.kategori===k?' selected':'')+'>'+k+'</option>';}).join('')}</select></div>
+    <div class="form-group"><label>Tanggal Dokumen</label><input type="date" id="dok-tgl" value="${d?d.tanggal:''}"></div>
+    <div class="form-group"><label>Keterangan</label><textarea id="dok-desk" rows="2" style="resize:vertical">${d?d.desk:''}</textarea></div>
+
+    <div style="border:1px solid var(--cream);border-radius:10px;overflow:hidden">
+      <div style="display:flex;border-bottom:1px solid var(--cream);background:var(--paper)">
+        <button type="button" id="tab-upload" onclick="switchDokTab('upload')" style="flex:1;padding:10px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer">
+          ⬆ Upload ke Google Drive
+        </button>
+        <button type="button" id="tab-link" onclick="switchDokTab('link')" style="flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.83rem;cursor:pointer">
+          🔗 Tempel Link Manual
+        </button>
+      </div>
+
+      <div id="panel-upload" style="padding:14px">
+        <div id="drop-zone" onclick="el('dok-file-input').click()" style="border:2px dashed var(--cream);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--cream)'">
+          <div style="font-size:2rem;margin-bottom:6px">📂</div>
+          <div style="font-size:.85rem;font-weight:600;color:var(--ink)">Klik untuk pilih file</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:4px">PDF, Word, Excel, Gambar — maks 10MB</div>
+        </div>
+        <input type="file" id="dok-file-input" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
+        <div id="file-selected" style="display:none;margin-top:10px;padding:10px 12px;background:#f0f7ff;border-radius:8px;font-size:.82rem;display:flex;align-items:center;gap:8px">
+          <span id="file-selected-name" style="flex:1;color:var(--ink)"></span>
+          <button type="button" onclick="clearFileSelect()" style="border:none;background:none;cursor:pointer;color:var(--muted);font-size:1rem">✕</button>
+        </div>
+        <div id="upload-progress" style="display:none;margin-top:10px">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:6px" id="upload-status">Mengupload ke Google Drive...</div>
+          <div style="height:6px;background:var(--cream);border-radius:3px;overflow:hidden">
+            <div id="progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width .3s;border-radius:3px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-link" style="padding:14px;display:none">
+        <div class="form-group" style="margin:0">
+          <label>Link Google Drive / URL Dokumen</label>
+          <input type="url" id="dok-link" value="${d?d.link:''}" placeholder="https://drive.google.com/file/d/...">
+          <div style="font-size:.74rem;color:var(--muted);margin-top:5px">Paste link dari Google Drive, OneDrive, atau URL dokumen lainnya</div>
+        </div>
+      </div>
+    </div>
+
+    ${id?'<div id="dok-current-link" style="font-size:.78rem;color:var(--muted);padding:6px 10px;background:var(--paper);border-radius:6px">Link saat ini: <a href="'+(d&&d.link?d.link:'#')+'" target="_blank" style="color:var(--accent)">'+(d&&d.link?d.link:'Belum ada link')+'</a></div>':''}
+  </div>
+  <div style="padding:0 16px 16px;display:flex;gap:8px;justify-content:flex-end">
+    ${id?'<button class="btn btn-danger btn-sm" onclick="delDok('+id+');closeM(\'modal-dok\')">Hapus</button>':''}
+    <button class="btn btn-outline btn-sm" onclick="closeM('modal-dok')">Batal</button>
+    <button class="btn btn-primary btn-sm" id="btn-dok-save" onclick="saveDok(${id||0})">Simpan</button>
+  </div>`;
+
+  var m = el('modal-dok');
+  if(!m){
+    var mo = document.createElement('div');
+    mo.id='modal-dok'; mo.className='modal-ov';
+    mo.innerHTML='<div class="modal modal-lg"><div class="modal-hdr"><h3 class="modal-dok-title">'+(id?'Edit':'Tambah')+' Dokumen</h3><button class="modal-cls" onclick="closeM(\'modal-dok\')">✕</button></div><div id="dok-body"></div></div>';
+    document.body.appendChild(mo);
+    mo.addEventListener('click', function(e){ if(e.target===mo) closeM('modal-dok'); });
+  } else {
+    el('modal-dok').querySelector('.modal-dok-title').textContent = (id?'Edit':'Tambah')+' Dokumen';
+  }
+  el('dok-body').innerHTML = bodyHtml;
+  // Set tab default
+  if(d && d.link) switchDokTab('link'); else switchDokTab('upload');
+  openM('modal-dok');
+}
+
+function switchDokTab(tab) {
+  var isUpload = tab === 'upload';
+  el('panel-upload').style.display = isUpload ? 'block' : 'none';
+  el('panel-link').style.display = isUpload ? 'none' : 'block';
+  el('tab-upload').style.background = isUpload ? 'var(--accent)' : 'transparent';
+  el('tab-upload').style.color = isUpload ? '#fff' : 'var(--muted)';
+  el('tab-link').style.background = isUpload ? 'transparent' : 'var(--accent)';
+  el('tab-link').style.color = isUpload ? 'var(--muted)' : '#fff';
+}
+
+var selectedFile = null;
+var uploadedLink = '';
+
+function handleFileSelect(input) {
+  if(!input.files || !input.files[0]) return;
+  var f = input.files[0];
+  if(f.size > 10 * 1024 * 1024) { toast('File terlalu besar, maksimal 10MB','error'); return; }
+  selectedFile = f;
+  uploadedLink = '';
+  el('file-selected').style.display = 'flex';
+  el('file-selected-name').textContent = '📄 ' + f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+}
+
+function clearFileSelect() {
+  selectedFile = null; uploadedLink = '';
+  el('file-selected').style.display = 'none';
+  el('dok-file-input').value = '';
+}
+
+async function uploadFileToGDrive(file) {
+  if(!GAS_URL) { toast('Apps Script URL belum dikonfigurasi','error'); return null; }
+  el('upload-progress').style.display = 'block';
+  el('upload-status').textContent = 'Membaca file...';
+  el('progress-bar').style.width = '20%';
+  el('btn-dok-save').disabled = true;
+
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = async function(e) {
+      try {
+        el('upload-status').textContent = 'Mengupload ke Google Drive...';
+        el('progress-bar').style.width = '50%';
+        var base64 = e.target.result.split(',')[1];
+        var resp = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ data: base64, fileName: file.name, mimeType: file.type || 'application/octet-stream' })
+        });
+        el('progress-bar').style.width = '85%';
+        var result = await resp.json();
+        el('progress-bar').style.width = '100%';
+        if(result.ok) {
+          el('upload-status').innerHTML = '✅ Upload berhasil! <a href="'+result.link+'" target="_blank" style="color:var(--accent)">Lihat di Drive</a>';
+          resolve(result.link);
+        } else {
+          el('upload-status').textContent = '❌ Gagal: ' + (result.error || 'Unknown error');
+          resolve(null);
+        }
+      } catch(err) {
+        el('upload-status').textContent = '❌ Error koneksi: ' + err.message;
+        resolve(null);
+      }
+      el('btn-dok-save').disabled = false;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function saveDok(id){
+  var nama = el('dok-nama').value.trim();
+  if(!nama){ toast('Nama dokumen wajib diisi','error'); return; }
+
+  // Tentukan link: upload file dulu jika ada file dipilih
+  var link = '';
+  var isUploadTab = el('panel-upload') && el('panel-upload').style.display !== 'none';
+
+  if(isUploadTab && selectedFile) {
+    var uploadedUrl = await uploadFileToGDrive(selectedFile);
+    if(!uploadedUrl){ toast('Upload gagal, coba lagi atau gunakan tab Link Manual','error'); return; }
+    link = uploadedUrl;
+    selectedFile = null;
+  } else {
+    // Ambil dari input link manual
+    var linkEl = el('dok-link');
+    link = linkEl ? linkEl.value.trim() : '';
+    // Kalau edit dan tidak ada link baru, pertahankan link lama
+    if(!link && id) {
+      var existing = dokStore.find(function(x){return x.id===id;});
+      if(existing) link = existing.link || '';
+    }
+  }
+
+  var row = {
+    nama: nama,
+    kategori: el('dok-kat').value,
+    tanggal: el('dok-tgl').value,
+    link: link,
+    desk: el('dok-desk').value.trim()
+  };
+
+  if(DEMO){
+    if(id){ var i=dokStore.findIndex(function(x){return x.id===id;}); if(i>-1) Object.assign(dokStore[i],row); }
+    else { row.id=dokNextId++; row.created_at=new Date().toISOString(); dokStore.push(row); }
+    saveDokLocal();
+    toast(id?'Dokumen diperbarui':'Dokumen ditambahkan','success');
+  } else {
+    var r = id ? await sbc.from('dokumen').update(row).eq('id',id) : await sbc.from('dokumen').insert(row).select().single();
+    if(r.error){ toast('Gagal menyimpan: '+r.error.message,'error'); return; }
+    toast(id?'Dokumen diperbarui':'Dokumen ditambahkan','success');
+  }
+  closeM('modal-dok'); loadDok();
+}
+
+async function delDok(id){
+  if(!confirm('Yakin hapus dokumen ini?'))return;
+  if(DEMO){dokStore=dokStore.filter(function(x){return x.id!==id;});saveDokLocal();}
+  else{var r=await sbc.from('dokumen').delete().eq('id',id);if(r.error){toast('Gagal menghapus','error');return;}}
+  toast('Dokumen dihapus','');loadDok();
+}
+
+// ── PANEL DOWNLOAD SEMUA DOKUMEN ──
+function bukaSemuaDok() {
+  var saved = localStorage.getItem('siprodi_dok');
+  var items = saved ? JSON.parse(saved) : dokStore;
+  var links = items.filter(function(d){return d.link&&d.link.trim();});
+  if(!links.length){toast('Tidak ada dokumen dengan link Google Drive','error');return;}
+  if(!confirm('Akan membuka '+links.length+' tab Google Drive sekaligus. Lanjutkan?')) return;
+  links.forEach(function(d,i){
+    setTimeout(function(){ window.open(d.link,'_blank'); }, i*300);
+  });
+  toast('Membuka '+links.length+' dokumen...','success');
+}
+
+function exportDokCSV() {
+  var saved = localStorage.getItem('siprodi_dok');
+  var items = saved ? JSON.parse(saved) : dokStore;
+  if(!items.length){toast('Tidak ada dokumen untuk diekspor','error');return;}
+  var header = 'Nama Dokumen,Kategori,Tanggal,Link Google Drive,Keterangan\n';
+  var rows = items.map(function(d){
+    return [d.nama,d.kategori,d.tanggal||'',d.link||'',d.desk||''].map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',');
+  }).join('\n');
+  var csv = '\uFEFF' + header + rows; // BOM untuk Excel
+  var blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href=url; a.download='dokumen-prodi-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('CSV berhasil diunduh!','success');
+}
 // ── DELETE ──
 async function delRec(tbl,id,cb) {
   if(!confirm('Yakin hapus data ini?')) return;
@@ -1165,10 +1457,19 @@ function saveAI() {
 
 // ── CONFIG ──
 function saveCfg() {
-  var u=el('cfg-url').value.trim(), k=el('cfg-key').value.trim();
-  if(!u||!k){toast('URL dan Key harus diisi','error');return;}
-  localStorage.setItem('sb_url',u); localStorage.setItem('sb_key',k);
-  toast('Disimpan, memuat ulang...','success'); setTimeout(function(){location.reload();},1500);
+  var gas = el('cfg-gas') ? el('cfg-gas').value.trim() : '';
+  var u = el('cfg-url').value.trim();
+  var k = el('cfg-key').value.trim();
+  if (gas) { localStorage.setItem('gas_url', gas); GAS_URL = gas; }
+  if (u && k) { localStorage.setItem('sb_url', u); localStorage.setItem('sb_key', k); }
+  toast('Konfigurasi disimpan!', 'success');
+  setTimeout(function(){ location.reload(); }, 1200);
+}
+
+function loadCfgForm() {
+  if(el('cfg-gas')) el('cfg-gas').value = GAS_URL || '';
+  if(el('cfg-url')) el('cfg-url').value = localStorage.getItem('sb_url') || '';
+  if(el('cfg-key')) el('cfg-key').value = localStorage.getItem('sb_key') || '';
 }
 
 // ── TOPBAR ACTION ──
@@ -1181,6 +1482,7 @@ function topAction() {
   else if(id==='dosen') openD(null);
   else if(id==='ppepp') openPpepp(null,ppeppActiveFase);
   else if(id==='mk') openMK(null);
+  else if(id==='dokumen') openDok(null);
   else openN(null);
 }
 
@@ -1189,7 +1491,6 @@ initSB();
 
 // Login
 el('btn-login').addEventListener('click', doLogin);
-el('btn-quick').addEventListener('click', quickLogin);
 el('login-password').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 el('login-email').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
@@ -1204,6 +1505,19 @@ pages.forEach(function(p){
   if(n){ n.setAttribute('data-p',p); n.addEventListener('click',function(){showPage(p);}); }
 });
 el('nav-ai').addEventListener('click', function(){ openM('modal-ai'); loadSavedKey(); });
+
+// Load cfg form values when config modal opens
+document.addEventListener('click', function(e){
+  if(e.target && (e.target.id==='lnk-cfg' || e.target.id==='lnk-cfg2' || e.target.closest('[data-open="modal-config"]'))) {
+    setTimeout(loadCfgForm, 100);
+  }
+});
+// Also load when modal-config is opened via any path
+var _origOpenM = openM;
+openM = function(id) {
+  _origOpenM(id);
+  if(id==='modal-config') setTimeout(loadCfgForm, 50);
+};
 
 // Dashboard buttons
 el('dash-see-all').addEventListener('click', function(){ showPage('notulen'); });
@@ -1278,20 +1592,21 @@ var DEMO_MK = [
 var mkStore = JSON.parse(JSON.stringify(DEMO_MK));
 
 async function dbGetPpepp() {
-  if(DEMO) return ppeppStore.slice();
+  if(DEMO) { var s=localStorage.getItem('siprodi_ppepp'); if(s){try{ppeppStore=JSON.parse(s);}catch(e){}} return ppeppStore.slice(); }
   var r=await sbc.from('ppepp').select('*').order('created_at',{ascending:false});
   return r.data||[];
 }
 async function dbInsPpepp(row){
-  if(DEMO){var n=Object.assign({},row,{id:Date.now(),created_at:new Date().toISOString()});ppeppStore.unshift(n);return{ok:true};}
+  if(DEMO){var n=Object.assign({},row,{id:Date.now(),created_at:new Date().toISOString()});ppeppStore.unshift(n);localStorage.setItem('siprodi_ppepp',JSON.stringify(ppeppStore));return{ok:true};}
   var r=await sbc.from('ppepp').insert(row).select().single();return{ok:!r.error};
 }
 async function dbUpdPpepp(id,row){
-  if(DEMO){var i=ppeppStore.findIndex(function(r){return r.id==id;});if(i>=0)ppeppStore[i]=Object.assign({},ppeppStore[i],row);return{ok:true};}
+  if(DEMO){var i=ppeppStore.findIndex(function(r){return r.id==id;});if(i>=0)ppeppStore[i]=Object.assign({},ppeppStore[i],row);localStorage.setItem('siprodi_ppepp',JSON.stringify(ppeppStore));return{ok:true};}
   var r=await sbc.from('ppepp').update(row).eq('id',id);return{ok:!r.error};
 }
+}
 async function dbDelPpepp(id){
-  if(DEMO){ppeppStore=ppeppStore.filter(function(r){return r.id!=id;});return{ok:true};}
+  if(DEMO){ppeppStore=ppeppStore.filter(function(r){return r.id!=id;});localStorage.setItem('siprodi_ppepp',JSON.stringify(ppeppStore));return{ok:true};}
   var r=await sbc.from('ppepp').delete().eq('id',id);return{ok:!r.error};
 }
 
@@ -1583,6 +1898,7 @@ async function loadMK() {
   var filterSem = el('mk-filter-sem').value;
   var filterRps = el('mk-filter-rps').value;
 
+  if(DEMO){ var smk=localStorage.getItem('siprodi_mk'); if(smk){try{mkStore=JSON.parse(smk);}catch(e){}} }
   var data = DEMO ? mkStore.slice() : (await dbGet('matakuliah'));
   var filtered = data.filter(function(mk){
     var matchSearch = !search || mk.nama.toLowerCase().includes(search) || mk.kode.toLowerCase().includes(search);
@@ -1683,8 +1999,10 @@ function saveMK() {
       if(idx>=0) mkStore[idx] = Object.assign({},mkStore[idx],row);
     } else {
       row.id = Date.now();
+      row.created_at = new Date().toISOString();
       mkStore.push(row);
     }
+    localStorage.setItem('siprodi_mk', JSON.stringify(mkStore));
     toast('Data MK disimpan!','success'); closeM('modal-mk'); loadMK();
   } else {
     // Supabase integration (table matakuliah)
@@ -1697,7 +2015,10 @@ function delMK(id) {
   if(!confirm('Yakin hapus MK ini?')) return;
   if(DEMO) {
     mkStore = mkStore.filter(function(m){return m.id!==id;});
+    localStorage.setItem('siprodi_mk', JSON.stringify(mkStore));
     toast('MK dihapus',''); loadMK();
+  } else {
+    dbDel('matakuliah',id).then(function(r){if(r.ok){toast('MK dihapus','');loadMK();}else{toast('Gagal menghapus','error');}});
   }
 }
 
