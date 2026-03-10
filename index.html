@@ -224,6 +224,7 @@ canvas{display:block}
   <div class="login-box">
     <div class="login-logo">SiProdi</div>
     <div class="login-sub">Sistem Administrasi Program Studi</div>
+    <div id="login-db-status" style="margin-bottom:14px;padding:10px 12px;border-radius:8px;font-size:.78rem;text-align:center"></div>
     <div class="lg">
       <div class="form-group">
         <label>Email</label>
@@ -235,6 +236,31 @@ canvas{display:block}
       </div>
       <button class="login-btn" id="btn-login">Masuk</button>
       <div class="login-err" id="login-err"></div>
+    </div>
+      <div style="margin-top:16px;text-align:center">
+        <div id="btn-login-cfg" style="height:20px;cursor:default;user-select:none" title=""></div>
+      </div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN CONFIG -->
+<div id="modal-login-cfg" style="display:none;position:fixed;inset:0;background:rgba(15,25,35,.65);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(3px)">
+  <div style="background:#fff;border-radius:16px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:su .25s ease">
+    <div style="padding:20px 26px;border-bottom:1px solid var(--cream);display:flex;align-items:center;justify-content:space-between">
+      <h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem">⚙️ Konfigurasi Supabase</h3>
+      <button onclick="el('modal-login-cfg').style.display='none'" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--cream);cursor:pointer">✕</button>
+    </div>
+    <div style="padding:22px 26px;display:grid;gap:14px">
+      <p style="font-size:.82rem;color:var(--muted);line-height:1.6">Masukkan kredensial Supabase dari project Anda. Setelah disimpan, login menggunakan akun yang sudah dibuat di Supabase Authentication.</p>
+      <div class="form-group"><label>Supabase Project URL</label><input type="text" id="lcfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
+      <div class="form-group"><label>Supabase Anon Key</label><input type="text" id="lcfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+      <div style="background:#f0f7ff;border:1px solid #b3d4ff;border-radius:8px;padding:10px 12px;font-size:.78rem;color:#1a4a8a">
+        💡 Temukan nilai ini di Supabase → Settings → API
+      </div>
+    </div>
+    <div style="padding:14px 26px 22px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--cream)">
+      <button onclick="el('modal-login-cfg').style.display='none'" style="padding:9px 20px;border-radius:8px;border:1.5px solid var(--cream);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem">Batal</button>
+      <button onclick="saveLCfg()" style="padding:9px 20px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600">Simpan & Terapkan</button>
     </div>
   </div>
 </div>
@@ -826,13 +852,55 @@ var DS = JSON.parse(JSON.stringify(BASE));
 
 // ── SUPABASE INIT ──
 function initSB() {
-  if (!SB_URL || !SB_KEY) { DEMO = true; loadLocalData(); return; }
+  SB_URL = localStorage.getItem('sb_url') || '';
+  SB_KEY = localStorage.getItem('sb_key') || '';
+  if (!SB_URL || !SB_KEY) { DEMO = true; loadLocalData(); updateLoginStatus(); return; }
   try {
     if (window.supabase && window.supabase.createClient) {
       sbc = window.supabase.createClient(SB_URL, SB_KEY);
       DEMO = false;
     }
   } catch(e) { sbc = null; DEMO = true; loadLocalData(); }
+  updateLoginStatus();
+}
+
+function updateLoginStatus() {
+  var s = el('login-db-status');
+  if(!s) return;
+  if(DEMO || !SB_URL) {
+    s.style.background = '#fff8e6';
+    s.style.border = '1px solid #f0d080';
+    s.style.color = '#8a6a00';
+    s.innerHTML = '⚠️ Belum terhubung ke database. Hubungi administrator sistem.';
+  } else {
+    s.style.background = '#e6f9f0';
+    s.style.border = '1px solid #80d4a8';
+    s.style.color = '#1a7a4a';
+    s.innerHTML = '✅ Terhubung ke Supabase. Silakan login dengan akun dosen.';
+  }
+}
+
+function saveLCfg() {
+  var u = el('lcfg-url').value.trim();
+  var k = el('lcfg-key').value.trim();
+  if(!u || !k) { 
+    alert('Supabase URL dan Anon Key harus diisi!'); 
+    return; 
+  }
+  if(!u.includes('supabase.co')) {
+    alert('URL tidak valid. Pastikan format: https://xxxx.supabase.co');
+    return;
+  }
+  localStorage.setItem('sb_url', u);
+  localStorage.setItem('sb_key', k);
+  el('modal-login-cfg').style.display = 'none';
+  // Re-init Supabase dengan kredensial baru
+  initSB();
+  var errEl = el('login-err');
+  errEl.style.color = '#1a7a4a';
+  errEl.textContent = '✅ Konfigurasi disimpan! Silakan login.';
+  errEl.style.display = 'block';
+  setTimeout(function(){ errEl.style.display='none'; errEl.style.color='#c0392b'; }, 3000);
 }
 
 // ── LOCAL STORAGE PERSISTENCE (mode tanpa Supabase) ──
@@ -923,42 +991,53 @@ function dbStatus() {
 
 // ── AUTH ──
 function doLogin() {
-  var email=el('login-email').value.trim();
-  var pass=el('login-password').value;
-  var errEl=el('login-err');
-  var btn=el('btn-login');
-  errEl.style.display='none';
-  btn.textContent='Memproses...'; btn.disabled=true;
+  var email = el('login-email').value.trim();
+  var pass = el('login-password').value;
+  var errEl = el('login-err');
+  var btn = el('btn-login');
+  errEl.style.display = 'none';
+  errEl.style.color = '#c0392b';
+  if(!email || !pass) { errEl.textContent='Email dan password harus diisi.'; errEl.style.display='block'; return; }
+  btn.textContent = 'Memproses...'; btn.disabled = true;
+
+  // Re-init Supabase untuk pastikan koneksi terbaru
+  initSB();
+
   setTimeout(async function(){
-    if(!SB_URL || !SB_KEY) {
-      // Mode lokal: simpan ke localStorage sebagai fallback sederhana
-      var savedUsers = JSON.parse(localStorage.getItem('siprodi_users')||'[]');
-      var found = savedUsers.find(function(u){return u.email===email&&u.pass===pass;});
-      if(!found && email && pass) {
-        // Auto-register first user as admin
-        if(savedUsers.length===0) {
-          savedUsers.push({email:email,pass:pass,name:email.split('@')[0]});
-          localStorage.setItem('siprodi_users', JSON.stringify(savedUsers));
-          found = savedUsers[0];
-        }
+    if(DEMO || !sbc) {
+      // Mode lokal — cek user tersimpan di localStorage
+      var savedUsers = JSON.parse(localStorage.getItem('siprodi_users') || '[]');
+      var found = savedUsers.find(function(u){ return u.email===email && u.pass===pass; });
+      if(!found && savedUsers.length === 0 && email && pass) {
+        // Auto-register user pertama
+        savedUsers.push({email:email, pass:pass, name:email.split('@')[0]});
+        localStorage.setItem('siprodi_users', JSON.stringify(savedUsers));
+        found = savedUsers[0];
       }
       if(found) {
-        user={email:found.email,name:found.name||found.email.split('@')[0]};
+        user = {email:found.email, name:found.name || found.email.split('@')[0]};
         startApp();
       } else {
-        errEl.textContent='Email atau password salah. Silakan hubungkan ke Supabase untuk login.';
-        errEl.style.display='block';
+        errEl.textContent = 'Login gagal. Database belum dikonfigurasi — hubungi administrator sistem.';
+        errEl.style.display = 'block';
       }
-      btn.textContent='Masuk'; btn.disabled=false; return;
+      btn.textContent = 'Masuk'; btn.disabled = false; return;
     }
     try {
-      var r=await sbc.auth.signInWithPassword({email:email,password:pass});
-      if(r.error){ errEl.textContent='Login gagal: '+r.error.message; errEl.style.display='block'; }
-      else { user=r.data.user; startApp(); }
+      var r = await sbc.auth.signInWithPassword({email:email, password:pass});
+      if(r.error) {
+        errEl.textContent = 'Login gagal: ' + r.error.message;
+        errEl.style.display = 'block';
+      } else {
+        user = r.data.user;
+        user.name = (r.data.user.user_metadata && r.data.user.user_metadata.name) || email.split('@')[0];
+        startApp();
+      }
     } catch(e) {
-      errEl.textContent='Koneksi gagal: '+e.message; errEl.style.display='block';
+      errEl.textContent = 'Koneksi gagal: ' + e.message;
+      errEl.style.display = 'block';
     }
-    btn.textContent='Masuk'; btn.disabled=false;
+    btn.textContent = 'Masuk'; btn.disabled = false;
   }, 300);
 }
 
@@ -1493,6 +1572,45 @@ initSB();
 el('btn-login').addEventListener('click', doLogin);
 el('login-password').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 el('login-email').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+// ── KONFIGURASI TERSEMBUNYI ──
+// Ketik "siprodi" di halaman login untuk membuka konfigurasi
+(function(){
+  var secret = 'siprodi';
+  var buffer = '';
+  document.addEventListener('keydown', function(e){
+    // Hanya aktif saat halaman login terlihat
+    var loginScreen = el('login-screen');
+    if(!loginScreen || loginScreen.style.display === 'none') return;
+    // Abaikan modifier keys
+    if(e.ctrlKey || e.altKey || e.metaKey) return;
+    // Hanya tangkap saat focus bukan di input field
+    if(document.activeElement && (document.activeElement.tagName==='INPUT' || document.activeElement.tagName==='TEXTAREA')) return;
+    buffer += e.key.toLowerCase();
+    if(buffer.length > secret.length) buffer = buffer.slice(-secret.length);
+    if(buffer === secret) {
+      buffer = '';
+      el('lcfg-url').value = localStorage.getItem('sb_url') || '';
+      el('lcfg-key').value = localStorage.getItem('sb_key') || '';
+      el('modal-login-cfg').style.display = 'flex';
+    }
+  });
+  // Klik 5x cepat pada logo SiProdi juga membuka konfigurasi
+  var logoClicks = 0, logoTimer = null;
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.classList.contains('login-logo')) {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(function(){ logoClicks = 0; }, 1500);
+      if(logoClicks >= 5) {
+        logoClicks = 0;
+        el('lcfg-url').value = localStorage.getItem('sb_url') || '';
+        el('lcfg-key').value = localStorage.getItem('sb_key') || '';
+        el('modal-login-cfg').style.display = 'flex';
+      }
+    }
+  });
+})();
 
 // Logout & topbar
 el('btn-logout').addEventListener('click', doLogout);
