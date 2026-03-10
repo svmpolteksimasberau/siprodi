@@ -253,7 +253,7 @@ canvas{display:block}
     <div style="padding:22px 26px;display:grid;gap:14px">
       <p style="font-size:.82rem;color:var(--muted);line-height:1.6">Masukkan kredensial Supabase dari project Anda. Setelah disimpan, login menggunakan akun yang sudah dibuat di Supabase Authentication.</p>
       <div class="form-group"><label>Supabase Project URL</label><input type="text" id="lcfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
-      <div class="form-group"><label>Supabase Anon Key</label><input type="text" id="lcfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+      <div class="form-group"><label>Supabase API Key (Publishable / Anon)</label><input type="text" id="lcfg-key" placeholder="sb_publishable_... atau eyJhbGci..."></div>
       <div style="background:#f0f7ff;border:1px solid #b3d4ff;border-radius:8px;padding:10px 12px;font-size:.78rem;color:#1a4a8a">
         💡 Temukan nilai ini di Supabase → Settings → API
       </div>
@@ -803,7 +803,7 @@ canvas{display:block}
 </div>
 
 <!-- SUPABASE JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 
 <!-- CHART.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -814,8 +814,8 @@ canvas{display:block}
 'use strict';
 
 // ── CONFIG ──
-var SB_URL = localStorage.getItem('sb_url') || '';
-var SB_KEY = localStorage.getItem('sb_key') || '';
+var SB_URL = localStorage.getItem('sb_url') || 'https://oqotyzcrfbmndtgizffq.supabase.co';
+var SB_KEY = localStorage.getItem('sb_key') || 'sb_publishable_6NdTvIKaStBgUkg_iNp-fg_bf83qK1P';
 var GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbxH9KoeJSv41ykYQrBbyC67IoFlaLYrtPA39fLmcsBRz7lMS0977oKLGQ8bEfiWdPOo6w/exec';
 var sbc = null;
 var DEMO = true;
@@ -884,17 +884,12 @@ function saveLCfg() {
   var u = el('lcfg-url').value.trim();
   var k = el('lcfg-key').value.trim();
   if(!u || !k) { 
-    alert('Supabase URL dan Anon Key harus diisi!'); 
+    alert('Supabase URL dan API Key harus diisi!'); 
     return; 
-  }
-  if(!u.includes('supabase.co')) {
-    alert('URL tidak valid. Pastikan format: https://xxxx.supabase.co');
-    return;
   }
   localStorage.setItem('sb_url', u);
   localStorage.setItem('sb_key', k);
   el('modal-login-cfg').style.display = 'none';
-  // Re-init Supabase dengan kredensial baru
   initSB();
   var errEl = el('login-err');
   errEl.style.color = '#1a7a4a';
